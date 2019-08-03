@@ -12,6 +12,8 @@ namespace Capstone62.Controllers
     {
         public IActionResult Index()
         {
+            ViewBag.LoggedIn = User.Identity.IsAuthenticated;
+            ViewBag.UID = User.Identity.Name;
             return View();
         }
 

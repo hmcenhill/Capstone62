@@ -2,7 +2,9 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <div class="text-center">
+        <h1 class="display-4">Welcome to Grand Circus University Enrollment Center</h1>
+        <p>@ViewBag.LoggedIn</p>
+        <p>@ViewBag.UID</p>
+        <p><a asp-controller="Student" asp-action="Details">My Account Details</a> or <a asp-controller="Users" asp-action="Create">Register New Account</a></p>
+    </div>
