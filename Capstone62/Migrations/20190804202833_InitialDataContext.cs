@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Capstone62.Migrations
 {
-    public partial class InitialData : Migration
+    public partial class InitialDataContext : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -22,22 +22,20 @@ namespace Capstone62.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserExtends",
+                name: "Students",
                 columns: table => new
                 {
-                    UserExtendId = table.Column<int>(nullable: false)
+                    StudentId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
                     UserName = table.Column<string>(nullable: true),
                     Role = table.Column<string>(nullable: true),
-                    IsAdmin = table.Column<bool>(nullable: false),
-                    Discriminator = table.Column<string>(nullable: false),
-                    StudentId = table.Column<int>(nullable: true),
-                    FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true)
+                    IsAdmin = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserExtends", x => x.UserExtendId);
+                    table.PrimaryKey("PK_Students", x => x.StudentId);
                 });
 
             migrationBuilder.CreateTable(
@@ -60,10 +58,10 @@ namespace Capstone62.Migrations
                         principalColumn: "CourseId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Enrollments_UserExtends_StudentId",
+                        name: "FK_Enrollments_Students_StudentId",
                         column: x => x.StudentId,
-                        principalTable: "UserExtends",
-                        principalColumn: "UserExtendId",
+                        principalTable: "Students",
+                        principalColumn: "StudentId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -87,7 +85,7 @@ namespace Capstone62.Migrations
                 name: "Courses");
 
             migrationBuilder.DropTable(
-                name: "UserExtends");
+                name: "Students");
         }
     }
 }

@@ -2,9 +2,15 @@
     ViewData["Title"] = "Home Page";
 }
 
-    <div class="text-center">
-        <h1 class="display-4">Welcome to Grand Circus University Enrollment Center</h1>
-        <p>@ViewBag.LoggedIn</p>
-        <p>@ViewBag.UID</p>
-        <p><a asp-controller="Student" asp-action="Details">My Account Details</a> or <a asp-controller="Users" asp-action="Create">Register New Account</a></p>
-    </div>
+<div class="text-center">
+    <h1 class="display-4">Welcome to Grand Circus University Enrollment Center</h1>
+    @if (ViewBag.LoggedIn)
+    {
+        <p><a asp-controller="Students" asp-action="Details">My Account Details</a></p>
+    }
+    else
+    {
+        <p><a asp-area="Identity" asp-page="/Account/Login">Login</a> or <a asp-area="Identity" asp-page="/Account/Register">Register</a></p>
+    }
+</div>
+

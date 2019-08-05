@@ -1,4 +1,4 @@
-﻿@model Capstone62.Models.Student
+﻿@model Capstone62.Models.DataVM
 
 @{
     ViewData["Title"] = "Details";
@@ -10,45 +10,59 @@
     <h4>Student</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StudentId)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CurrentStudent.FirstName)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StudentId)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CurrentStudent.FirstName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CurrentStudent.LastName)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CurrentStudent.LastName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CurrentStudent.UserName)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CurrentStudent.UserName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserName)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CurrentStudent.Role)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserName)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CurrentStudent.Role)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Role)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CurrentStudent.IsAdmin)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Role)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsAdmin)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsAdmin)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CurrentStudent.IsAdmin)
         </dd>
     </dl>
+    <hr />
+    @if (Model.Enrollments.Count > 0)
+    {
+        <h5>Enrollments</h5>
+        <dl class="row">
+
+            @foreach (var enrollment in Model.Enrollments)
+            {
+                <dd class="col-sm-10">
+                    @enrollment.Course.Name
+                </dd>
+                <dd class="col-sm-10">
+                    @enrollment.Grade
+                </dd>
+            }
+        </dl>
+    }
+
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.UserExtendId">Edit</a> |
+    <a asp-action="Index" asp-controller="Enrollments">Enroll in Course</a> |
+    <a asp-action="Edit" asp-route-id="@Model.CurrentStudent.StudentId">Edit</a> |
+    <a asp-action="Delete" asp-route-id="@Model.CurrentStudent.StudentId">Delete</a> |
     <a asp-action="Index">Back to List</a>
 </div>

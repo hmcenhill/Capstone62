@@ -54,39 +54,25 @@ namespace Capstone62.Migrations
                     b.ToTable("Enrollments");
                 });
 
-            modelBuilder.Entity("Capstone62.Models.UserExtend", b =>
+            modelBuilder.Entity("Capstone62.Models.Student", b =>
                 {
-                    b.Property<int>("UserExtendId")
+                    b.Property<int>("StudentId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
+                    b.Property<string>("FirstName");
 
                     b.Property<bool>("IsAdmin");
+
+                    b.Property<string>("LastName");
 
                     b.Property<string>("Role");
 
                     b.Property<string>("UserName");
 
-                    b.HasKey("UserExtendId");
+                    b.HasKey("StudentId");
 
-                    b.ToTable("UserExtends");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("UserExtend");
-                });
-
-            modelBuilder.Entity("Capstone62.Models.Student", b =>
-                {
-                    b.HasBaseType("Capstone62.Models.UserExtend");
-
-                    b.Property<string>("FirstName");
-
-                    b.Property<string>("LastName");
-
-                    b.Property<int>("StudentId");
-
-                    b.HasDiscriminator().HasValue("Student");
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("Capstone62.Models.Enrollment", b =>

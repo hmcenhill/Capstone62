@@ -21,7 +21,8 @@ namespace Capstone62.Controllers
         // GET: Students
         public async Task<IActionResult> Index()
         {
-            if (await IsUserAdminAsync())
+            var student = await GetCurrentStudent();
+            if (student.IsAdmin)
             {
                 return View(await _context.Students.ToListAsync());
             }
@@ -31,24 +32,55 @@ namespace Capstone62.Controllers
         // GET: Students/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if(!User.Identity.IsAuthenticated)
+            if (!User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
             }
-            
-            if (id == null)
+
+            var student = await GetCurrentStudent();
+
+            if (student.IsAdmin)
             {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var viewStudent = await _context.Students.FindAsync(id);
+                if (viewStudent == null)
+                {
+                    return NotFound();
+                }
+                var vm = new DataVM();
+                vm.CurrentStudent = viewStudent;
+                vm.Enrollments = _context.Enrollments.Where(x => x.Student.StudentId == student.StudentId).ToList();
+                vm.Courses = new List<Course>();
+                foreach (var enrollment in vm.Enrollments)
+                {
+                    vm.Courses.Add(_context.Courses.Where(x => x.CourseId == enrollment.CourseId).FirstOrDefault());
+                }
+
+                return View(vm);
             }
 
-            var student = await _context.Students
-                .FirstOrDefaultAsync(m => m.UserExtendId == id);
             if (student == null)
             {
-                return NotFound();
+                return RedirectToAction("Create");
             }
+            if (true)
+            {
 
-            return View(student);
+                var vm = new DataVM();
+                vm.CurrentStudent = student;
+                vm.Enrollments = _context.Enrollments.Where(x => x.Student.StudentId == student.StudentId).ToList();
+                vm.Courses = new List<Course>();
+                foreach (var enrollment in vm.Enrollments)
+                {
+                    vm.Courses.Add(_context.Courses.Where(x => x.CourseId == enrollment.CourseId).FirstOrDefault());
+                }
+
+                return View(vm);
+            }
         }
 
         // GET: Students/Create
@@ -69,7 +101,7 @@ namespace Capstone62.Controllers
                 student.UserName = User.Identity.Name;
                 _context.Add(student);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details));
             }
             return View(student);
         }
@@ -77,16 +109,33 @@ namespace Capstone62.Controllers
         // GET: Students/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (!User.Identity.IsAuthenticated)
             {
-                return NotFound();
+                return RedirectToAction("Index", "Home");
             }
 
-            var student = await _context.Students.FindAsync(id);
+            var student = await GetCurrentStudent();
+
+            if (student.IsAdmin)
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var viewStudent = await _context.Students.FindAsync(id);
+                if (viewStudent == null)
+                {
+                    return NotFound();
+                }
+                return View(viewStudent);
+            }
+
             if (student == null)
             {
-                return NotFound();
+                return RedirectToAction("Create");
             }
+
             return View(student);
         }
 
@@ -95,9 +144,9 @@ namespace Capstone62.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("StudentId,FirstName,LastName,UserExtendId,UserName,Role,IsAdmin")] Student student)
+        public async Task<IActionResult> Edit(int id, [Bind("StudentId,FirstName,LastName,UserName,Role,IsAdmin")] Student student)
         {
-            if (id != student.UserExtendId)
+            if (id != student.StudentId)
             {
                 return NotFound();
             }
@@ -111,7 +160,7 @@ namespace Capstone62.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!StudentExists(student.UserExtendId))
+                    if (!StudentExists(student.StudentId))
                     {
                         return NotFound();
                     }
@@ -128,16 +177,31 @@ namespace Capstone62.Controllers
         // GET: Students/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (!User.Identity.IsAuthenticated)
             {
-                return NotFound();
+                return RedirectToAction("Index", "Home");
             }
 
-            var student = await _context.Students
-                .FirstOrDefaultAsync(m => m.UserExtendId == id);
+            var student = await GetCurrentStudent();
+
+            if (student.IsAdmin)
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var viewStudent = await _context.Students.FindAsync(id);
+                if (viewStudent == null)
+                {
+                    return NotFound();
+                }
+                return View(viewStudent);
+            }
+
             if (student == null)
             {
-                return NotFound();
+                return RedirectToAction("Create");
             }
 
             return View(student);
@@ -156,24 +220,12 @@ namespace Capstone62.Controllers
 
         private bool StudentExists(int id)
         {
-            return _context.Students.Any(e => e.UserExtendId == id);
+            return _context.Students.Any(e => e.StudentId == id);
         }
-        private async Task<bool> IsUserAdminAsync()
+
+        private async Task<Student> GetCurrentStudent()
         {
-            var tryLogin = await _context.UserExtends.Where(x => x.UserName == User.Identity.Name).FirstOrDefaultAsync();
-            if (tryLogin == null) return false;
-            return tryLogin.IsAdmin;
-        }
-        private async Task<bool> IsUserStudent()
-        {
-            var tryStudent = await _context.Students.Where(x => x.UserName == User.Identity.Name).FirstOrDefaultAsync();
-            if (tryStudent == null) return false;
-            return true;
-        }
-        private async Task<int> GetStudentId()
-        {
-            var tryId = await _context.Students.Where(x => x.UserName == User.Identity.Name).FirstOrDefaultAsync();
-            return tryId.StudentId;
+            return await _context.Students.FirstOrDefaultAsync(m => m.UserName == User.Identity.Name);
         }
     }
 }
